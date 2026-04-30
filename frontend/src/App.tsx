@@ -140,7 +140,7 @@ const App: React.FC = () => {
   };
 
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [bookingData, setBookingData] = useState({ pickup: '', dropoff: '', vehicleType: 'CAR' });
+  const [bookingData, setBookingData] = useState({ pickup: '', dropoff: '', vehicleType: 'car' });
   const [fareEstimate, setFareEstimate] = useState<any>(null);
   const [isEstimating, setIsEstimating] = useState(false);
   const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
@@ -313,9 +313,8 @@ const App: React.FC = () => {
                   className="form-input" 
                   value={bookingData.vehicleType} onChange={e => setBookingData({...bookingData, vehicleType: e.target.value})}
                 >
-                  <option value="CAR">Premium Sedan</option>
-                  <option value="BIKE">Velo Bike</option>
-                  <option value="LUXURY">Luxury Elite</option>
+                  <option value="car">Premium Sedan</option>
+                  <option value="bike">Velo Bike</option>
                 </select>
               </div>
               
