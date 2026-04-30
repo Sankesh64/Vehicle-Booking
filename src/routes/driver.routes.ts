@@ -17,7 +17,7 @@ router.put('/me/availability', authenticate as any, validate(toggleAvailabilityS
 router.get('/me/profile', authenticate as any, driverController.getProfile);
 
 // KYC
-router.post('/kyc/initiate', authenticate as any, driverController.initiateKYC);
+router.post('/kyc/initiate', driverController.initiateKYC);
 router.get('/kyc/pending', authenticate as any, adminOnly as any, driverController.getPendingKYC);
 router.patch('/kyc/:sessionId/review', authenticate as any, adminOnly as any, validate(kycReviewSchema), driverController.reviewKYC);
 

@@ -32,7 +32,8 @@ export class DriverController {
   });
 
   initiateKYC = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const { userId } = (req as AuthenticatedRequest).user;
+    // For demo/landing page, use a fallback if not logged in
+    const userId = (req as AuthenticatedRequest).user?.userId || '69f2376af2b41d0899bac8ce';
     const session = await driverService.initiateKYC(userId);
     sendCreated(res, session);
   });
