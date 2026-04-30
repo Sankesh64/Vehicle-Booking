@@ -154,17 +154,31 @@ const App: React.FC = () => {
     }
   }, [notification]);
 
+  const fetchCoordinates = async (address: string) => {
+    const apiKey = 'mtzrV0DkVBqhIFKu0t3wfC8q4j0VqceZ';
+    const res = await fetch(`https://api.geocodify.com/v2/geocode?api_key=${apiKey}&q=${encodeURIComponent(address)}`);
+    const data = await res.json();
+    if (data.features && data.features.length > 0) {
+      return data.features[0].geometry.coordinates; // [longitude, latitude]
+    }
+    throw new Error('Location not found');
+  };
+
   const handleEstimate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsEstimating(true);
     try {
-      // For demonstration, we'll try to call the real API
-      // If it fails (e.g. rate limit), we'll show a friendly message
-      const data = await bookingApi.estimateFare(bookingData.pickup, bookingData.dropoff, bookingData.vehicleType);
+      const pickupCoords = await fetchCoordinates(bookingData.pickup);
+      const dropoffCoords = await fetchCoordinates(bookingData.dropoff);
+
+      const pickupLocation = { address: bookingData.pickup, coordinates: pickupCoords };
+      const dropLocation = { address: bookingData.dropoff, coordinates: dropoffCoords };
+
+      const data = await bookingApi.estimateFare(pickupLocation, dropLocation, bookingData.vehicleType);
       setFareEstimate(data.data);
     } catch (err: any) {
       console.error(err);
-      setNotification({ message: 'Failed to fetch estimate. Please check your inputs.', type: 'error' });
+      setNotification({ message: 'Failed to fetch estimate. Please check your inputs or try a different location.', type: 'error' });
     } finally {
       setIsEstimating(false);
     }
@@ -174,15 +188,19 @@ const App: React.FC = () => {
     if (!fareEstimate) return;
     
     try {
+      const pickupCoords = await fetchCoordinates(bookingData.pickup);
+      const dropoffCoords = await fetchCoordinates(bookingData.dropoff);
+
       // 1. Create a real booking first
       const booking = await bookingApi.createBooking({
-        pickup: bookingData.pickup,
-        dropoff: bookingData.dropoff,
+        pickupLocation: { address: bookingData.pickup, coordinates: pickupCoords },
+        dropLocation: { address: bookingData.dropoff, coordinates: dropoffCoords },
         vehicleType: bookingData.vehicleType,
-        estimatedFare: fareEstimate.fare
+        paymentMethod: 'razorpay',
+        isScheduled: false
       });
 
-      const bookingId = booking.data._id;
+      const bookingId = booking.data.booking._id;
 
       // 2. Create Razorpay Order
       const orderData = await paymentApi.createOrder(bookingId);
@@ -245,13 +263,13 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (kycSession && kycSession.zegoConfig) {
-      const { appId, wssUrl } = kycSession.zegoConfig;
+      const { appId, wssUrl, token } = kycSession.zegoConfig;
       const zg = new ZegoExpressEngine(appId, wssUrl);
       
       const startVideo = async () => {
         try {
-          // Token is the 2nd argument, User object (userID, userName) is the 3rd
-          await zg.loginRoom(kycSession.roomId, '', { userID: kycSession.sessionId, userName: 'Driver' });
+          // Pass the dynamically generated secure token
+          await zg.loginRoom(kycSession.roomId, token, { userID: kycSession.sessionId, userName: 'Driver' }, { userUpdate: true });
           const localStream = await zg.createStream();
           const videoElement = document.getElementById('kycVideo') as HTMLVideoElement;
           if (videoElement) {

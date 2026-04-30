@@ -1,30 +1,23 @@
 import crypto from 'crypto';
 import { env } from '../config/env';
 
+import { generateToken04 } from 'zego-server-assistant';
+
 /**
- * Generate a ZEGOCLOUD Token (Simple version for demonstration)
- * NOTE: For production, use the official zego-server-assistant library.
+ * Generate a ZEGOCLOUD Token (Secure version using zego-server-assistant)
  */
 export function generateZegoToken(userId: string, roomId: string): string {
-  const appId = env.ZEGO_APP_ID;
+  const appId = parseInt(env.ZEGO_APP_ID, 10);
   const serverSecret = env.ZEGO_SERVER_SECRET;
   
-  // This is a placeholder for the actual ZEGOCLOUD token generation logic
-  // which usually involves a specific HMAC construction.
-  // We'll return a secure hash that includes the credentials.
-  const payload = JSON.stringify({
-    app_id: appId,
-    user_id: userId,
-    room_id: roomId,
-    privilege: { 1: 1, 2: 1 }, // login and publish
-    stream_id_list: [],
-  });
+  // Token validity: 1 hour (3600 seconds)
+  const effectiveTimeInSeconds = 3600;
+  
+  // Empty payload is fine for basic WebRTC login
+  const payload = '';
 
-  const hash = crypto.createHmac('sha256', serverSecret)
-    .update(payload)
-    .digest('hex');
-
-  return hash; // This is a mock token. Real ZEGOCLOUD tokens have a specific binary format.
+  const token = generateToken04(appId, userId, serverSecret, effectiveTimeInSeconds, payload);
+  return token;
 }
 
 export const zegoConfig = {
