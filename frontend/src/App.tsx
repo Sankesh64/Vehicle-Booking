@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
 import './App.css';
-import { bookingApi, driverApi } from './api';
+import { bookingApi, driverApi, paymentApi } from './api';
 
 const App: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -171,9 +171,59 @@ const App: React.FC = () => {
   };
 
   const handleBook = async () => {
-    setNotification({ message: 'Ride booked successfully! A driver will be assigned shortly.', type: 'success' });
-    setShowBookingModal(false);
-    setFareEstimate(null);
+    if (!fareEstimate) return;
+    
+    try {
+      // 1. Create a real booking first
+      const booking = await bookingApi.createBooking({
+        pickup: bookingData.pickup,
+        dropoff: bookingData.dropoff,
+        vehicleType: bookingData.vehicleType,
+        estimatedFare: fareEstimate.fare
+      });
+
+      const bookingId = booking.data._id;
+
+      // 2. Create Razorpay Order
+      const orderData = await paymentApi.createOrder(bookingId);
+      const { orderId, amount, currency, keyId } = orderData.data;
+
+      const options = {
+        key: keyId,
+        amount: amount,
+        currency: currency,
+        name: "VeloRide",
+        description: "Ride Payment",
+        order_id: orderId,
+        handler: async function (response: any) {
+          try {
+            await paymentApi.verifyPayment({
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+            setNotification({ message: 'Payment successful! Your ride is confirmed.', type: 'success' });
+            setShowBookingModal(false);
+            setFareEstimate(null);
+          } catch (err) {
+            setNotification({ message: 'Payment verification failed.', type: 'error' });
+          }
+        },
+        prefill: {
+          name: "User Name",
+          email: "user@example.com",
+          contact: "9999999999"
+        },
+        theme: { color: "#4361ee" }
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+
+    } catch (err: any) {
+      console.error(err);
+      setNotification({ message: 'Failed to process booking/payment.', type: 'error' });
+    }
   };
   
   const [kycSession, setKycSession] = useState<any>(null);
