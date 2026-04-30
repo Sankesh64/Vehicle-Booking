@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
-import { bookingApi, authApi } from './api';
+import { bookingApi } from './api';
 
 const App: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -123,7 +123,6 @@ const App: React.FC = () => {
   }, []);
 
   const animateCounter = (el: HTMLElement, target: number) => {
-    let start = 0;
     const duration = 1800;
     const suffix = target === 98 ? '%' : '+';
     const startTime = performance.now();
