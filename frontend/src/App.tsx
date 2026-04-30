@@ -140,7 +140,7 @@ const App: React.FC = () => {
   };
 
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [bookingData, setBookingData] = useState({ pickup: '', dropoff: '', vehicleType: 'car' });
+  const [bookingData, setBookingData] = useState({ pickup: '', dropoff: '', vehicleCategory: 'car' });
   const [fareEstimate, setFareEstimate] = useState<any>(null);
   const [isEstimating, setIsEstimating] = useState(false);
   const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
@@ -174,7 +174,7 @@ const App: React.FC = () => {
       const pickupLocation = { address: bookingData.pickup, coordinates: pickupCoords };
       const dropLocation = { address: bookingData.dropoff, coordinates: dropoffCoords };
 
-      const data = await bookingApi.estimateFare(pickupLocation, dropLocation, bookingData.vehicleType);
+      const data = await bookingApi.estimateFare(pickupLocation, dropLocation, bookingData.vehicleCategory);
       setFareEstimate(data.data);
     } catch (err: any) {
       console.error(err);
@@ -195,8 +195,8 @@ const App: React.FC = () => {
       const booking = await bookingApi.createBooking({
         pickupLocation: { address: bookingData.pickup, coordinates: pickupCoords },
         dropLocation: { address: bookingData.dropoff, coordinates: dropoffCoords },
-        vehicleType: bookingData.vehicleType,
-        paymentMethod: 'razorpay',
+        vehicleCategory: bookingData.vehicleCategory,
+        paymentMethod: 'online',
         isScheduled: false
       });
 
@@ -313,7 +313,7 @@ const App: React.FC = () => {
                 <label className="form-label">Pickup Location</label>
                 <input 
                   type="text" className="form-input" placeholder="Enter pickup address" 
-                  value={bookingData.pickup} onChange={e => setBookingData({...bookingData, pickup: e.target.value})}
+                  value={bookingData.pickup} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBookingData({...bookingData, pickup: e.target.value})}
                   required
                 />
               </div>
@@ -321,7 +321,7 @@ const App: React.FC = () => {
                 <label className="form-label">Drop-off Location</label>
                 <input 
                   type="text" className="form-input" placeholder="Enter destination" 
-                  value={bookingData.dropoff} onChange={e => setBookingData({...bookingData, dropoff: e.target.value})}
+                  value={bookingData.dropoff} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBookingData({...bookingData, dropoff: e.target.value})}
                   required
                 />
               </div>
@@ -329,7 +329,7 @@ const App: React.FC = () => {
                 <label className="form-label">Vehicle Type</label>
                 <select 
                   className="form-input" 
-                  value={bookingData.vehicleType} onChange={e => setBookingData({...bookingData, vehicleType: e.target.value})}
+                  value={bookingData.vehicleCategory} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setBookingData({...bookingData, vehicleCategory: e.target.value})}
                 >
                   <option value="car">Premium Sedan</option>
                   <option value="bike">Velo Bike</option>
@@ -343,8 +343,8 @@ const App: React.FC = () => {
               ) : (
                 <div className="fare-card reveal">
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px' }}>Estimated Fare</div>
-                  <div className="fare-amount">₹{fareEstimate.fare}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '8px' }}>Includes taxes & fees • {fareEstimate.distance} km</div>
+                  <div className="fare-amount">₹{fareEstimate.estimatedFare}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '8px' }}>Includes taxes & fees • {fareEstimate.distanceKm} km</div>
                   <button type="button" className="btn-primary filled" style={{ width: '100%', marginTop: '20px' }} onClick={handleBook}>
                     Confirm & Book Ride
                   </button>

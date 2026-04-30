@@ -60,7 +60,7 @@ export class DriverService {
   async initiateKYC(userId: string) {
     const driver = await Driver.findOne({ userId });
     if (!driver) throw new NotFoundError('Driver profile');
-    if (driver.kycStatus === KYCStatus.APPROVED) throw new ValidationError('KYC already approved');
+    if (driver.kycStatus === KYCStatus.APPROVED) throw new ValidationError('KYC already approved. No re-initiation needed.');
 
     const sessionId = generateSecureToken(16);
     const roomId = `kyc_${driver._id}_${Date.now()}`;

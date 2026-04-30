@@ -7,11 +7,11 @@ const api = axios.create({
 });
 
 export const bookingApi = {
-  estimateFare: async (pickup: any, dropoff: any, vehicleType: string) => {
+  estimateFare: async (pickup: any, dropoff: any, vehicleCategory: string) => {
     const response = await api.post('/bookings/estimate', { 
       pickupLocation: pickup, 
       dropLocation: dropoff, 
-      vehicleCategory: vehicleType 
+      vehicleCategory: vehicleCategory 
     });
     return response.data;
   },
