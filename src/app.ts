@@ -37,7 +37,10 @@ app.use(helmet());
 // 3. CORS — strict origin, no wildcards
 app.use(
   cors({
-    origin: env.CORS_ORIGINS.split(',').map((o) => o.trim()),
+    origin: env.CORS_ORIGINS.split(',').map((o) => {
+      // Make it bulletproof: trim spaces, remove surrounding quotes, and remove trailing slashes
+      return o.trim().replace(/^['"]+|['"]+$/g, '').replace(/\/$/, '');
+    }),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
