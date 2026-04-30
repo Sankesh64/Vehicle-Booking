@@ -50,6 +50,10 @@ export const driverApi = {
     const response = await api.post('/drivers/kyc', kycData);
     return response.data;
   },
+  initiateKyc: async () => {
+    const response = await api.post('/drivers/kyc/initiate');
+    return response.data;
+  },
   getStats: async () => {
     const response = await api.get('/drivers/stats');
     return response.data;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
 import './App.css';
-import { bookingApi } from './api';
+import { bookingApi, driverApi } from './api';
 
 const App: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -175,6 +176,48 @@ const App: React.FC = () => {
     setFareEstimate(null);
   };
   
+  const [kycSession, setKycSession] = useState<any>(null);
+  const [isKycLoading, setIsKycLoading] = useState(false);
+
+  const handleInitiateKyc = async () => {
+    setIsKycLoading(true);
+    try {
+      const data = await driverApi.initiateKyc();
+      setKycSession(data.data);
+      setNotification({ message: 'KYC Session initiated!', type: 'success' });
+    } catch (err: any) {
+      console.error(err);
+      setNotification({ message: 'Failed to initiate KYC.', type: 'error' });
+    } finally {
+      setIsKycLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (kycSession && kycSession.zegoConfig) {
+      const { appId, wssUrl } = kycSession.zegoConfig;
+      const zg = new ZegoExpressEngine(appId, wssUrl);
+      
+      const startVideo = async () => {
+        try {
+          await zg.loginRoom(kycSession.roomId, kycSession.sessionId, { userName: 'Driver', token: '' });
+          const localStream = await zg.createStream();
+          const videoElement = document.getElementById('kycVideo') as HTMLVideoElement;
+          if (videoElement) {
+            videoElement.srcObject = localStream;
+            videoElement.play();
+          }
+          setNotification({ message: 'Video stream started. Please look into the camera.', type: 'success' });
+        } catch (err) {
+          console.error('Zego Error:', err);
+          setNotification({ message: 'Failed to start video stream.', type: 'error' });
+        }
+      };
+
+      startVideo();
+    }
+  }, [kycSession]);
+
   const toggleMenu = () => setMobileMenuOpen(!mobileMenuOpen);
   const closeMenu = () => setMobileMenuOpen(false);
 
@@ -507,13 +550,21 @@ const App: React.FC = () => {
                 <div className="trust-badge">🛡️ Govt. ID Verified</div>
                 <div className="trust-badge">🤖 AI-Powered</div>
               </div>
+              <button 
+                onClick={handleInitiateKyc} 
+                className="btn-primary filled" 
+                style={{ marginTop: '24px' }}
+                disabled={isKycLoading}
+              >
+                {isKycLoading ? 'Initiating...' : 'Start Video KYC →'}
+              </button>
             </div>
 
             <div className="reveal reveal-delay-2">
               <div className="kyc-mockup">
                 <div style={{ fontFamily: 'var(--font-head)', fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '16px', letterSpacing: '-0.03em' }}>Driver Verification Portal</div>
                 <div className="kyc-video-area">
-                  <div className="kyc-person-silhouette"><div className="kyc-person-head"></div></div>
+                  <video id="kycVideo" autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }}></video>
                   <div className="kyc-face-scan">
                     <div className="scan-line"></div>
                     <div className="kyc-corner tl"></div><div className="kyc-corner tr"></div>

@@ -40,8 +40,10 @@ const envSchema = z.object({
   RAZORPAY_WEBHOOK_SECRET: z.string().min(1, 'RAZORPAY_WEBHOOK_SECRET is required'),
 
   // ─── ZEGOCLOUD ─────────────────────────────────────────
-  ZEGO_APP_ID: z.coerce.number().int().positive(),
+  ZEGO_APP_ID: z.string().min(1, 'ZEGO_APP_ID is required'),
   ZEGO_SERVER_SECRET: z.string().min(1, 'ZEGO_SERVER_SECRET is required'),
+  ZEGO_APP_SIGN: z.string().min(1, 'ZEGO_APP_SIGN is required'),
+  ZEGO_WSS_URL: z.string().url().min(1, 'ZEGO_WSS_URL is required'),
 
   // ─── Sentry ────────────────────────────────────────────
   SENTRY_DSN: z.string().url().optional(),

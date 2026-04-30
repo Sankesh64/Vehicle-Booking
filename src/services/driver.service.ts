@@ -10,6 +10,7 @@ import { logger } from '../config/logger';
 import { NotFoundError, ValidationError, ConflictError } from '../utils/errors';
 import { KYCStatus, UserRole, VehicleCategory } from '../types';
 import { generateSecureToken } from '../utils/helpers';
+import { zegoConfig } from '../utils/zego';
 
 export class DriverService {
   async onboard(userId: string, data: {
@@ -74,7 +75,7 @@ export class DriverService {
     await driver.save();
 
     logger.info('KYC session initiated', { driverId: driver._id.toString(), sessionId });
-    return { sessionId, roomId, expiresAt: kycSession.expiresAt };
+    return { sessionId, roomId, expiresAt: kycSession.expiresAt, zegoConfig };
   }
 
   async reviewKYC(kycSessionId: string, adminId: string, status: 'approved' | 'rejected', notes?: string, rejectionReason?: string) {
