@@ -1,79 +1,232 @@
-# Vehicle Booking Platform - Backend
+# 🚗 VeloRide — Intelligent Vehicle Booking Platform
 
-A production-grade, enterprise-level backend architecture for a premium full-stack Vehicle Booking Platform (Cars, Bikes, Rentals, Driver Booking).
+> **Book Smarter. Travel Faster.**
 
-## 🚀 Features
+VeloRide is a full-stack, production-grade vehicle booking platform built with a modern, scalable architecture. It combines real-time tracking, secure authentication, video KYC, and a multi-role ecosystem (Users, Drivers, Admins) into a single seamless experience.
 
-*   **Secure Authentication**: JWT + Refresh Tokens + Session Management.
-*   **Driver Onboarding**: Full KYC flow with document tracking and vehicle management.
-*   **Real-time Tracking**: Socket.io integration for live location updates.
-*   **Booking System**: Dynamic fare estimation based on distance, time, and vehicle category.
-*   **Payments**: Integrated with Razorpay.
-*   **Security**: Helmet, Rate Limiting, Mongo Sanitization, and validated environment variables.
-*   **Monitoring**: Sentry integration for real-time error tracking.
-*   **Architecture**: Layered architecture (Controllers, Services, Repositories, Models).
+This project is not just a CRUD app — it is designed to reflect real-world mobility systems like Uber, Ola, and enterprise SaaS platforms.
 
-## 🛠 Tech Stack
+---
 
-*   **Node.js & Express.js**: Fast and minimal web framework.
-*   **TypeScript**: Type safety and better developer experience.
-*   **MongoDB & Mongoose**: Flexible NoSQL database with schema modeling.
-*   **Socket.io**: Real-time bidirectional communication.
-*   **Zod**: Runtime schema validation.
-*   **Winston**: Advanced logging system.
-*   **Docker**: Containerized deployment.
+# ✨ Key Highlights
 
-## 🏁 Getting Started
+* ⚡ **Real-Time Ride Tracking** using Socket.io
+* 📹 **Driver Video KYC System** powered by ZEGOCLOUD
+* 🔐 **Secure Authentication System** (JWT + Refresh Tokens + Session Management)
+* 💳 **Integrated Payment System** using Razorpay
+* 🚘 **Complete Booking Lifecycle** (Search → Book → Track → Complete → Pay)
+* 🧠 **AI-Ready Architecture** for future intelligent ride suggestions
+* 🧩 **Multi-Role System** (User + Driver + Admin)
+* 🎨 **Premium UI/UX** with smooth animations (Framer Motion)
 
-### Prerequisites
+---
 
-*   Node.js >= 18
-*   MongoDB Atlas account
-*   Docker (optional)
+# 🛠️ Tech Stack
 
-### Installation
+### Frontend
 
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/Sankesh64/Vehicle-Booking.git
-    cd Vehicle-Booking
-    ```
+* Next.js
+* TypeScript
+* Framer Motion
+* TailwindCSS
 
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
+### Backend
 
-3.  Configure environment variables:
-    *   Rename `.env.example` to `.env`.
-    *   Fill in your MongoDB URI, JWT Secrets, and other keys.
+* Node.js + Express.js
+* MongoDB + Mongoose
+* Socket.io
+* Zod (Validation)
+* JWT + Refresh Token System
+* Winston + Sentry
 
-4.  Run in development mode:
-    ```bash
-    npm run dev
-    ```
+### Integrations
 
-5.  Build for production:
-    ```bash
-    npm run build
-    npm start
-    ```
+* Razorpay (Payments)
+* ZEGOCLOUD (Video KYC)
 
-## 🐳 Docker Deployment
+---
 
-```bash
-docker build -t vehicle-booking-api .
-docker run -p 5000:5000 --env-file .env vehicle-booking-api
+# 🏗️ System Architecture
+
+VeloRide follows a **clean, modular backend architecture**:
+
+```
+controllers → services → repositories → database
 ```
 
-## 📡 API Endpoints
+With:
 
-*   **Auth**: `/api/v1/auth`
-*   **Bookings**: `/api/v1/bookings`
-*   **Drivers**: `/api/v1/drivers`
-*   **Payments**: `/api/v1/payments`
-*   **Health**: `/health`
+* Centralized error handling
+* Strict validation layer
+* Role-based access control (RBAC)
+* Secure API standards
+* Scalable real-time communication layer
 
-## 📄 License
+---
 
-ISC
+# 🚀 Core Features
+
+## 👤 User System
+
+* Register / Login / Logout
+* Session management
+* Booking history
+* Wallet system
+* Profile management
+
+## 🚖 Booking Engine
+
+* Fare estimation
+* Vehicle selection
+* Driver assignment
+* Ride lifecycle management
+* Cancellation & refunds
+
+## 🚗 Driver System
+
+* Driver onboarding
+* Vehicle registration
+* Availability toggle
+* Earnings dashboard
+* KYC verification
+
+## 📡 Real-Time System
+
+* Live driver tracking
+* Booking status updates
+* Notifications
+* ETA updates
+
+## 💳 Payments
+
+* Razorpay order creation
+* Payment verification
+* Refund system
+* Wallet settlements
+
+---
+
+# 🔒 Security First
+
+This project is built with **production-grade security practices**:
+
+* Helmet (secure headers)
+* Rate limiting
+* JWT authentication with rotation
+* Refresh token hashing
+* MongoDB injection prevention
+* Zod validation on every request
+* Role-based access control
+* Ownership validation (no IDOR)
+* Secure cookies (HttpOnly, SameSite)
+
+---
+
+# ⚠️ Current Known Issues
+
+Every real project has flaws. Here are the ones currently identified:
+
+### 1. API Contract Mismatches
+
+* Some frontend fields do not align with backend validation
+* Example: `vehicleType` vs `vehicleCategory`
+
+### 2. Payment Method Mapping
+
+* Frontend uses `"razorpay"`
+* Backend expects `"online"`
+
+### 3. ZEGOCLOUD Secret Format Issue
+
+* Requires exactly **32-character string**
+* Incorrect formatting causes KYC failures
+
+### 4. Authentication Middleware Gaps
+
+* Certain routes assume `req.user` without enforcing authentication
+
+### 5. Deployment Sync Delays
+
+* Render redeploy delays can cause stale backend behavior
+* Vercel caching may serve outdated frontend builds
+
+### 6. Third-Party API Response Handling
+
+* Geocoding response structure mismatch caused location failures
+
+---
+
+# 🧠 Future Roadmap
+
+VeloRide is designed to evolve into a **smart mobility platform**.
+
+### 🚀 Upcoming Features
+
+* 🤖 AI-based ride recommendations
+* 📊 Admin analytics dashboard (real-time insights)
+* 🧾 Invoice & billing system
+* 📱 Push notifications (Web + Mobile)
+* 🧍 Driver rating & reputation system
+* 🚦 Smart surge pricing engine
+* 🌍 Multi-city / geo-scaling support
+* 🧠 Demand prediction using ML models
+* 💼 Corporate fleet management system
+
+---
+
+# 🌐 Deployment
+
+Backend:
+
+* Dockerized production build
+* Deployable on Render / AWS / DigitalOcean
+
+Frontend:
+
+* Vercel optimized
+
+Database:
+
+* MongoDB Atlas
+
+---
+
+# 🧪 Testing
+
+* End-to-end flow testing (Auth, Booking, Payment)
+* API validation testing
+* Manual + automated test support
+
+---
+
+# 🤝 Contributing
+
+This project is actively evolving.
+
+If you're someone who:
+
+* enjoys solving real backend challenges
+* understands scalable systems
+* or just wants to fix something that's slightly broken
+
+👉 **You're welcome to contribute.**
+
+There are real issues here that need thoughtful solutions, not surface-level fixes.
+
+---
+
+# 💡 Final Note
+
+VeloRide is not just a project.
+
+It’s a foundation for building:
+
+* scalable systems
+* production-ready architectures
+* and real-world engineering intuition
+
+If you’re reading this, you’re already ahead of most people who stop at tutorials.
+
+---
+
+**Build seriously. Ship carefully. Improve relentlessly.**
