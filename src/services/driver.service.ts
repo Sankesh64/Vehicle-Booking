@@ -74,7 +74,7 @@ export class DriverService {
     driver.kycSessionId = sessionId;
     await driver.save();
 
-    const token = generateZegoToken(sessionId, roomId);
+    const token = generateZegoToken(sessionId);
 
     logger.info('KYC session initiated', { driverId: driver._id.toString(), sessionId });
     return { 
