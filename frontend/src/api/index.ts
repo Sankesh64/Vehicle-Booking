@@ -41,4 +41,30 @@ export const authApi = {
   }
 };
 
+export const driverApi = {
+  getNearby: async (lat: number, lng: number) => {
+    const response = await api.post('/bookings/nearby-drivers', { lat, lng });
+    return response.data;
+  },
+  updateKyc: async (kycData: any) => {
+    const response = await api.post('/drivers/kyc', kycData);
+    return response.data;
+  },
+  getStats: async () => {
+    const response = await api.get('/drivers/stats');
+    return response.data;
+  }
+};
+
+export const paymentApi = {
+  createOrder: async (bookingId: string) => {
+    const response = await api.post('/payments/order', { bookingId });
+    return response.data;
+  },
+  verifyPayment: async (paymentData: any) => {
+    const response = await api.post('/payments/verify', paymentData);
+    return response.data;
+  }
+};
+
 export default api;
