@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { env } from '../config/env';
 
-import { generateToken04 } from 'zego-server-assistant';
+import { generateToken04 } from './zegoServerAssistant';
 
 /**
  * Generate a ZEGOCLOUD Token (Secure version using zego-server-assistant)
