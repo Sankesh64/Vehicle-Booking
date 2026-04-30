@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+
 import { env } from '../config/env';
 
 import { generateToken04 } from './zegoServerAssistant';
@@ -6,7 +6,7 @@ import { generateToken04 } from './zegoServerAssistant';
 /**
  * Generate a ZEGOCLOUD Token (Secure version using zego-server-assistant)
  */
-export function generateZegoToken(userId: string, roomId: string): string {
+export function generateZegoToken(userId: string): string {
   const appId = parseInt(env.ZEGO_APP_ID, 10);
   const serverSecret = env.ZEGO_SERVER_SECRET;
   
