@@ -250,7 +250,8 @@ const App: React.FC = () => {
       
       const startVideo = async () => {
         try {
-          await zg.loginRoom(kycSession.roomId, kycSession.sessionId, { userName: 'Driver', token: '' });
+          // Token is the 2nd argument, User object (userID, userName) is the 3rd
+          await zg.loginRoom(kycSession.roomId, '', { userID: kycSession.sessionId, userName: 'Driver' });
           const localStream = await zg.createStream();
           const videoElement = document.getElementById('kycVideo') as HTMLVideoElement;
           if (videoElement) {
