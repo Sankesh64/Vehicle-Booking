@@ -37,10 +37,21 @@ app.use(helmet());
 // 3. CORS — strict origin, no wildcards
 app.use(
   cors({
-    origin: env.CORS_ORIGINS.split(',').map((o) => {
-      // Make it bulletproof: trim spaces, remove surrounding quotes, and remove trailing slashes
-      return o.trim().replace(/^['"]+|['"]+$/g, '').replace(/\/$/, '');
-    }),
+    origin: (origin, callback) => {
+      // Allow the specific Vercel URL and localhost directly to bypass any Render env var typos
+      const allowedOrigins = [
+        'https://vehicle-booking-ecru.vercel.app',
+        'http://localhost:5173',
+        ...env.CORS_ORIGINS.split(',').map((o) => o.trim().replace(/^['"]+|['"]+$/g, '').replace(/\/$/, ''))
+      ];
+      
+      // If no origin (e.g. mobile app or curl) or if origin is in allowed list, permit it
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
