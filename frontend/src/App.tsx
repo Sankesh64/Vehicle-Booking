@@ -158,8 +158,10 @@ const App: React.FC = () => {
     const apiKey = 'mtzrV0DkVBqhIFKu0t3wfC8q4j0VqceZ';
     const res = await fetch(`https://api.geocodify.com/v2/geocode?api_key=${apiKey}&q=${encodeURIComponent(address)}`);
     const data = await res.json();
-    if (data.features && data.features.length > 0) {
-      return data.features[0].geometry.coordinates; // [longitude, latitude]
+    // Geocodify wraps results in data.response.features
+    const features = data.response?.features || data.features;
+    if (features && features.length > 0) {
+      return features[0].geometry.coordinates; // [longitude, latitude]
     }
     throw new Error('Location not found');
   };
